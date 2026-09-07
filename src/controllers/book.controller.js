@@ -20,6 +20,7 @@ exports.create = async (req, res) => {
         }
 
         const newBook = await bookModel.create({ author, title });
+        res.status(201).json(newBook);
     } catch (error) {
         console.error("Lỗi:", error);
         res.status(500).json({ message: " Lỗi thêm sách" });
