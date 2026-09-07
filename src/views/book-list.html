@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Danh sách</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>📚 Danh sách sách</h1>
+
+    <div class="form-row">
+      <input type="text" id="authorInput" placeholder="Tên tác giả">
+      <input type="text" id="bookInput" placeholder="Tên sách">
+      <button class="btn btn-add" onclick="addBook()">+ Thêm sách</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>Tác giả</th>
+          <th>Tên sách</th>
+          <th>Xoá</th>
+        </tr>
+      </thead>
+      <tbody id="bookTableBody">
+        <!-- Các dòng sách sẽ được thêm vào đây -->
+      </tbody>
+    </table>
+  </div>
+
+  <script src="/js/main.js"></script>
+</body>
+
+</html>
