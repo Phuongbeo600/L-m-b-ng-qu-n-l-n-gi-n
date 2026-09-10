@@ -1,26 +1,41 @@
-let books = [{ id: 1, title: "Bảy viên ngọc rồng", author: "Phương" }, { id: 2, title: "Đắc nhân tâm", author: "Đức" },];
-let nextId = 3;
-const getAll = () => books;
-const getById = (id) => books.find(b => b.id === id);
-const search = (keyword) =>
-    books.filter(b => b.title.toLocaleLowerCase().includes(keyword.toLocaleLowerCase()));
-const create = (data) => {
-    const newBook = { id: nextId++, ...data };
-    books.push(newBook);
-    return newBook;
+const pool = require('../config/db');
+
+exports.getAll = async () => {
+    const [rows] = await pool.query(
+        "SELECT id, author, title FROM books ORDER BY id DESC"
+    );
+    return rows;
 };
 
-const update = (id, data) => {
-    const book = getById(id);
-    if (!book) return null;
-    Object.assign(book, data);
-    return book;
-};
-const remove = (id) => {
-    const index = books.findIndex(b => b.id === id);
-    if (index === -1) return false;
-    books.splice(index, 1);
-    return true;
+exports.create = async ({ author, title }) => {
+    const [result] = await pool.query(
+        "INSERT INTO books (author, title) VALUE (?, ?)",
+        [author, title]
+    );
+    return {
+        id: result.insertId,
+        author,
+        title
+    };
 };
 
-module.exports = { getAll, getById, search, create, update, remove };
+exports.remove = async (id) => {
+    const [result] = await pool.query(
+        "DELETE FROM books WHERE id = ?",
+        [id]
+    );
+    return result.affectedRows > 0;
+};
+
+exports.search = async (keyword) => {
+    const sql = `
+    SELECT id, author, title
+    FROM books
+    WHERE title LIKE ? OR author LIKE ?
+    ORDER BY id DESC
+    `;
+    const searchTerm = `%${keyword}`;
+
+    const [rows] = await pool.query(sql, [searchTerm, searchTerm]);
+    return rows;
+};

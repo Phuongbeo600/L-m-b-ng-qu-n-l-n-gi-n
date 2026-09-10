@@ -1,3 +1,5 @@
+
+
 document.addEventListener('DOMContentLoaded', () => {
     fetchBooks();
 
@@ -5,7 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnAdd) {
         btnAdd.addEventListener('click', addBook);
     }
+
+    const btnSearch = document.getElementById('btn-search');
+    if (btnSearch) {
+        btnSearch.addEventListener('click', searchBook);
+    }
 });
+
 
 function fetchBooks() {
     fetch('/books')
@@ -67,4 +75,38 @@ function deleteBook(id) {
             fetchBooks();
         })
         .catch(err => console.err('Lỗi xoá sách:', err));
+}
+
+function searchBook() {
+    const searchInput = document.getElementById('searchInput');
+    const keyword = searchInput ? searchInput.value.trim() : '';
+
+    fetch(`/books/search?q=${encodeURIComponent(keyword)}`)
+        .then(res => res.json())
+        .then(data => {
+            const books = Array.isArray(data) ? data : (data.data || []);
+            renderTable(books);
+        })
+        .catch(err => console.error('Lỗi tìm kiếm sách :', err));
+}
+
+function renderTable(books) {
+    const tableBody = document.getElementById('bookTableBody');
+    tableBody.innerHTML = '';
+    if (books.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Không tìm thấy dữ liệu</td></tr>'
+        return;
+    }
+    books.forEach((book, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${book.author}</td>
+        <td>${book.title}</td>
+        <td>
+        <button class="btn btn-delete" onclick="deleteBook(${book.id})">Xóa</button>
+        </td>
+        `;
+        tableBody.appendChild(tr);
+    });
 }
