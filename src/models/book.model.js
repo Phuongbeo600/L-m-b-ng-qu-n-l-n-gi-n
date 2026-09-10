@@ -22,6 +22,20 @@ exports.create = async ({ author, title }) => {
 exports.remove = async (id) => {
     const [result] = await pool.query(
         "DELETE FROM books WHERE id = ?",
+        [id]
     );
     return result.affectedRows > 0;
+};
+
+exports.search = async (keyword) => {
+    const sql = `
+    SELECT id, author, title
+    FROM books
+    WHERE title LIKE ? OR author LIKE ?
+    ORDER BY id DESC
+    `;
+    const searchTerm = `%${keyword}`;
+
+    const [rows] = await pool.query(sql, [searchTerm, searchTerm]);
+    return rows;
 };

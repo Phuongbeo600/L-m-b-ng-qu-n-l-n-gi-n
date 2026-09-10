@@ -42,3 +42,23 @@ exports.deleteBook = async (req, res) => {
         res.status(500).json({ message: "Lỗi xóa sách" });
     }
 };
+
+exports.search = async (req, res) => {
+    try {
+        const keyword = req.query.q;
+
+        if (!keyword || keyword.trim() === '') {
+            const books = await bookModel.getAll();
+            return res.status(200).json(books);
+        }
+
+        const books = await bookModel.search(keyword.trim());
+        return res.status(200).json(books);
+    } catch (error) {
+        console.error('Lỗi khi tìm kiếm sách:', error);
+        return res.status(500).json({
+            message: 'Lỗi server khi tìm kiếm dữ liệu'
+        });
+    }
+
+};
